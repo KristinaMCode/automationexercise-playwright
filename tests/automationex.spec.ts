@@ -1,12 +1,16 @@
 import { test, expect } from '@playwright/test';
-import { PATH } from '../test-data/testData';
+import { PATH, PRODUCT, TEXT } from '../test-data/testData';
 import { HomePage } from '../pages/HomePage';
+import { ProductsPage } from '../pages/ProductsPage';
+
+test.beforeEach(async ({ page }) => {
+    await page.route(/(googlesyndication|doubleclick|googleadservices)/, route => route.abort());
+});
 
 test('Verify first page', async ({ page }) => {
-    await page.route(/(googlesyndication|doubleclick|googleadservices)/, route => route.abort());
     const homePage = new HomePage(page);
     await homePage.goto();
-    await expect(page).toHaveTitle('Automation Exercise');
+    await expect(page).toHaveTitle(TEXT.automationExercise);
     await expect(homePage.testCaseButton).toBeVisible();
     await expect(homePage.apiListButton).toBeVisible();
     await expect(homePage.shopMenu).toBeVisible();
@@ -14,12 +18,12 @@ test('Verify first page', async ({ page }) => {
 });
 
 test('verify All products page', async ({ page }) => {
-    await page.route(/(googlesyndication|doubleclick|googleadservices)/, route => route.abort());
-    await page.goto('/');
-    await page.getByRole('link', { name: 'Products' }).click();
+    const homePage = new HomePage(page);
+    const productsPage = new ProductsPage(page);
+    await homePage.goto();
+    await homePage.productsLink.click();
     await expect(page).toHaveURL(PATH.products);
-    await expect(page.locator('.title.text-center')).toHaveText('All Products');
-    await page.locator('#search_product').fill('Tshirt');
-    await page.locator('#submit_search').click();
-    await expect(page.locator('.title.text-center')).toHaveText('Searched Products');
+    await expect(productsPage.productPageTitle).toHaveText(TEXT.allProducts);
+    await productsPage.searchProduct(PRODUCT.tShirt);
+    await expect(productsPage.productPageTitle).toHaveText(TEXT.searchedProducts);
 });
