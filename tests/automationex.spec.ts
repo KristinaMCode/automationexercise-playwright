@@ -2,14 +2,16 @@ import { test, expect } from '@playwright/test';
 import { PATH, PRODUCT, TEXT } from '../test-data/testData';
 import { HomePage } from '../pages/HomePage';
 import { ProductsPage } from '../pages/ProductsPage';
+let homePage: HomePage;
 
 test.beforeEach(async ({ page }) => {
     await page.route(/(googlesyndication|doubleclick|googleadservices)/, route => route.abort());
+    
+    homePage = new HomePage(page);
+    await homePage.goto();
 });
 
 test('Verify first page', async ({ page }) => {
-    const homePage = new HomePage(page);
-    await homePage.goto();
     await expect(page).toHaveTitle(TEXT.automationExercise);
     await expect(homePage.testCaseButton).toBeVisible();
     await expect(homePage.apiListButton).toBeVisible();
@@ -18,9 +20,7 @@ test('Verify first page', async ({ page }) => {
 });
 
 test('verify All products page', async ({ page }) => {
-    const homePage = new HomePage(page);
     const productsPage = new ProductsPage(page);
-    await homePage.goto();
     await homePage.productsLink.click();
     await expect(page).toHaveURL(PATH.products);
     await expect(productsPage.productPageTitle).toHaveText(TEXT.allProducts);
