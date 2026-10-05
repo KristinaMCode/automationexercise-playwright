@@ -5,8 +5,7 @@ import { ProductsPage } from '../pages/ProductsPage';
 let homePage: HomePage;
 
 test.beforeEach(async ({ page }) => {
-    await page.route(/(googlesyndication|doubleclick|googleadservices)/, route => route.abort());
-    
+    await page.route(/(googlesyndication|doubleclick|googleadservices)/, route => route.abort());  
     homePage = new HomePage(page);
     await homePage.goto();
 });
